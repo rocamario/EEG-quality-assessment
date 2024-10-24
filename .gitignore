@@ -1,3 +1,4 @@
 *.npy
 *.csv
 challenge/
+.DS_Store
