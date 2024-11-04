@@ -3,14 +3,14 @@ import numpy as np
 from sklearn.metrics import f1_score
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import cohen_kappa_score
-from models.features_list import list_features
+from models.features_list import best_features
 
 def standardize_data(X_train, X_val):
     scaler = StandardScaler()
     X_train_scaled = X_train.copy()
     X_val_scaled = X_val.copy()
     
-    columns_to_scale = list_features
+    columns_to_scale = best_features
     
     X_train_scaled[columns_to_scale] = scaler.fit_transform(X_train[columns_to_scale])
     X_val_scaled[columns_to_scale] = scaler.transform(X_val[columns_to_scale])
@@ -19,7 +19,7 @@ def standardize_data(X_train, X_val):
 
 # Train an XGBoost model
 def train_xgboost_model(x_train, y_train):
-    dtrain = xgb.DMatrix(data=x_train[list_features], label=y_train)
+    dtrain = xgb.DMatrix(data=x_train[best_features], label=y_train)
     
     params = {
         'objective': 'binary:logistic',
@@ -33,7 +33,7 @@ def train_xgboost_model(x_train, y_train):
 
 # Evaluate the model
 def evaluate_model(model, x_val, y_val):
-    dval = xgb.DMatrix(data=x_val[list_features])
+    dval = xgb.DMatrix(data=x_val[best_features])
     
     prediction = model.predict(dval)
     prediction = np.round(prediction)  # Convert probabilities to binary predictions
