@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 from scipy.stats import skew, kurtosis
+from scipy.signal import hilbert
 
 # Extract time domain features
 def extract_time_domain_features(data, return_type='dataframe'):
@@ -70,3 +71,46 @@ def extract_time_domain_features(data, return_type='dataframe'):
         return features
     else:
        raise ValueError("return_type must be either 'dataframe' or 'numpy'")
+    
+
+def extract_amplitude_modulation_features(data, return_type='dataframe'):
+    """
+    Extracts amplitude modulation features from EEG data using the Hilbert transform.
+    Parameters:
+    data (numpy.ndarray): A 2D or 3D array where each row (or each slice in the case of 3D) represents a 2-second window of EEG data sampled at 250 Hz (i.e., each row has 500 data points).
+    return_type (str): The type of the return value, either 'dataframe' or 'numpy'.
+    Returns:
+    pandas.DataFrame or numpy.ndarray: A DataFrame or ndarray containing the following amplitude modulation features for each row (or slice) of the input data:
+        - envelope_mean: The mean of the amplitude envelope.
+        - envelope_std: The standard deviation of the amplitude envelope.
+        - envelope_max: The maximum value of the amplitude envelope.
+        - envelope_min: The minimum value of the amplitude envelope.
+    """
+
+    is_3d = data.ndim == 3
+
+    analytic_signal = hilbert(data, axis=-1)
+    amplitude_envelope = np.abs(analytic_signal)
+
+    envelope_mean = np.mean(amplitude_envelope, axis=-1)
+    envelope_std = np.std(amplitude_envelope, axis=-1)
+    envelope_max = np.max(amplitude_envelope, axis=-1)
+    envelope_min = np.min(amplitude_envelope, axis=-1)
+
+    features = {
+        "envelope_mean": envelope_mean,
+        "envelope_std": envelope_std,
+        "envelope_max": envelope_max,
+        "envelope_min": envelope_min,
+    }
+
+    if not is_3d:
+        for key in features:
+            features[key] = features[key].reshape(-1)
+
+    if return_type == 'dataframe':
+        return pd.DataFrame(features)
+    elif return_type == 'numpy':
+        return features
+    else:
+        raise ValueError("return_type must be either 'dataframe' or 'numpy'")
