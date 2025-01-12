@@ -30,7 +30,7 @@ We extracted features from EEG signals across three domains:
 
 By optimizing the XGBoost classifier using Grid-Search, this approach has been implemented using two settings of 1) preloaded extracted features or 2) extracting features from scratch in "Methods_XGBOOST_features_exploring_pre_extracted features.ipynb" and "Methods_XGBOOST_features_exploring_full.ipynb", respectively. For using the former, one needs to have the extratcted features file which have been sent by email to professor.
 
-## 2) {Work on selecting the best classifier pipeline Model
+## 2) Work on selecting the best classifier pipeline Model
 
 Several machine learning models were explored and evaluated:
 - **Logistic Regression**: As a baseline model.
